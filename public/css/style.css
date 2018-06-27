@@ -1,0 +1,61 @@
+
+#ratesContainer{
+    overflow-y:scroll;
+    overflow-x:hidden;
+}
+
+#ratesContainer .rate-box:hover{
+    color:#fff;
+    background-color:#c2cdcd;
+    cursor: pointer;
+}
+
+.active {
+    color:#fff;
+    background-color:#c2cdcd;
+}
+
+.rate-box{
+    height:100px;
+    width:100%;
+}
+
+.base-currency{
+    background-color:#0084a1;
+    color:#fff;
+}
+
+.vs-currency{
+    width:75px;
+    display:inline-block;
+}
+
+.h-85 {
+    height:85% !important;
+}
+
+.btn-icon{
+    top:0;
+    right:0;
+}
+
+.oi-plus,.oi-list{
+    font-size:32px;
+    cursor:pointer;
+}
+
+.list-item{
+    background-color:#00c7a4;
+    cursor:pointer;
+    width:250px;
+    height:100px;
+}
+
+.alert-danger{
+    position: absolute;
+    left: 40%;
+}
+
+.list-item-notify{
+    background-color:red !important;
+}

@@ -1,0 +1,36 @@
+{
+  "posts": [
+    {
+      "id": "1530083863418",
+      "baseCurrency": "EUR",
+      "exchangeCurrency": "AED",
+      "level": "1"
+    },
+    {
+      "id": "1530084234371",
+      "baseCurrency": "EUR",
+      "exchangeCurrency": "AFN",
+      "level": "1"
+    },
+    {
+      "id": "1530084274675",
+      "baseCurrency": "EUR",
+      "exchangeCurrency": "AMD",
+      "level": "561.784324"
+    },
+    {
+      "id": "1530084279539",
+      "baseCurrency": "EUR",
+      "exchangeCurrency": "ANG",
+      "level": "1"
+    },
+    {
+      "id": "1530086710388",
+      "baseCurrency": "EUR",
+      "exchangeCurrency": "AFN",
+      "level": "1"
+    }
+  ],
+  "user": {},
+  "count": 0
+}
