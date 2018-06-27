@@ -1,0 +1,90 @@
+<!DOCTYPE>
+<html>
+    <head>
+        <link rel="stylesheet" href="/vendor/css/bootstrap.min.css" >
+        <link rel="stylesheet" href="/public/open-iconic-bootstrap.css" >
+        <link rel="stylesheet" href="/public/style.css" >
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="col-md-12">
+                
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="rate-box base-currency">
+                                <h1>EUR</h1>
+                                <h4>Base Currency</h4>
+                        </div>
+                        </div>
+                        <div class="col-md-10 base-currency text-center">
+                            <div class="rate-box">
+                                <h1>EUR vs <span class="vs-currency"></span></h1>
+                                <h4><span class="exchange-rate"></span></h4>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-center justify-content-center h-100 btn-icon position-absolute">
+                                <span class="oi oi-list"></span>
+                            </div>
+                        </div>
+                </div>
+                <div class="row">
+                    <div id="ratesContainer" class="col-md-2 h-85">
+
+                    </div>
+                    <div class="col-md-10 d-flex justify-content-center form-add-edit mt-5">
+                        <form class="col-md-6">
+                            <input type="hidden" id="itemID" value="" />
+                            <div class="form-group">
+                              <label for="baseCurrency">Base Currency</label>
+                              <input type="text" class="form-control" id="baseCurrency" disabled>
+                            </div>
+                            <div class="form-group">
+                              <label for="exchangeCurrency">Exchange Currency</label>
+                              <input type="text" class="form-control" id="exchangeCurrency" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="level">Set Level</label>
+                                <input type="number" class="form-control" step=".000001" id="level">
+                              </div>
+                            <div class="form-group text-center">
+                                <button type="button" id="btnSubmit" class="btn btn-primary">Submit</button>
+                            </div>
+                          </form>
+                        
+                    </div>
+                       
+                    <div class="col-md-10 row list-level justify-content-around mt-5">
+
+                            
+                    </div>
+                    <div class="alert alert-danger fade col-md-4 text-center" role="alert">
+                        <strong>Maximum Saved Level Reached</strong>
+                    </div>
+                    <div class="modal fade" id="setLevelsModal" tabindex="-1" role="dialog" aria-labelledby="setLevelCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLongTitle">List Levels Mark Reached</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+               
+            </div>
+              
+        </div>
+      
+        <script src="/vendor/js/jquery.min.js"></script>
+        <script src="/vendor/js/bootstrap.min.js"></script>
+        <script src="/public/app.js"></script>
+    </body>
+</html>
