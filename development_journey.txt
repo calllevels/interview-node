@@ -1,0 +1,13 @@
+hi,
+
+sorry to take up some times to make it done. i still have to make my jobs done while making it, and i dont really know what kind of product do you really expect to see. too lazy for templating, and maybe since my node abit rusty thats why object type is such an ass.
+
+make it on windows64, feature:
+- make 'init' to populate data from external api.
+- set values with 'set' button.
+- reset currency set with 'X' button
+
+product approach: 
+- make it as minimum requirement as it could be
+- make it as portable as it could be
+
