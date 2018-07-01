@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Forex Rates</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+</head>
+<body>
+  <div id="app" class="container">
+    <div class="row">
+      <div class="col">
+        <h3>Forex Rates</h3>
+        <div class="mb-2">
+          <button type="button" class="btn btn-primary btn-sm" @click="fetchRates">
+            <span class="fa fa-sync"></span>
+            Refresh Data
+          </button>
+        </div>
+        <table class="table table-sm table-striped">
+          <thead class="thead-dark">
+          <tr>
+            <th>Currency</th>
+            <th>Rates</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tfoot>
+          <tr>
+            <td colspan="3" style="text-align: right"><small>Last Updated: {{ lastUpdated }}</small></td>
+          </tr>
+          </tfoot>
+          <tbody>
+          <tr v-for="(rate, symbol) in rates" :key="symbol">
+            <td>{{ symbol }}</td>
+            <td>{{ rate }}</td>
+            <td>
+              <span v-if="getMark(rate, symbol)" title="Level Reached" class="fa fa-exclamation-triangle"></span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col">
+        <h3>Forex Level</h3>
+        <form class="form-inline mb-2">
+          <select class="form-control form-control-sm mr-1" v-model="currencyLevel">
+            <option disabled value="">Please select currency</option>
+            <option v-for="(rate, symbol) in rates">
+              {{ symbol }}
+            </option>
+          </select>
+
+          <input type="text" v-model="valueLevel" class="form-control form-control-sm mr-1" placeholder="0.000" />
+
+          <button type="button" class="btn btn-primary btn-sm" @click="addLevel">
+            <span class="fa fa-plus"></span>
+            Add
+          </button>
+        </form>
+        <table class="table table-sm table-striped">
+          <thead class="thead-dark">
+            <th>Action</th>
+            <th>Currency</th>
+            <th>Level</th>
+          </thead>
+          <tbody>
+            <tr v-for="(level, index) in levels">
+              <td>
+                <button v-if="!level.edit" type="button" class="btn btn-sm btn-info" @click="edit(index)">
+                  <span class="fa fa-sm fa-edit"></span>
+                  Edit
+                </button>
+                <button v-if="!level.edit" type="button" class="btn btn-sm btn-danger" @click="deleteLevel(level.id)">
+                  <span class="fa fa-sm fa-trash-alt"></span>
+                  Delete
+                </button>
+
+                <button v-if="level.edit" type="button" class="btn btn-sm btn-primary" @click="editSave(level, index)">
+                  <span class="fa fa-save"></span>
+                  Update
+                </button>
+
+                <button v-if="level.edit" type="button" class="btn btn-sm btn-warning" @click="cancelEdit(index)">
+                  <span class="fa fa-times"></span>
+                  Cancel
+                </button>
+              </td>
+              <td>{{ level.currency }}</td>
+              <td>
+                <span v-if="!level.edit">{{ level.value }}</span>
+                <input v-if="level.edit" type="text" v-model="editValue" class="form-control form-control-sm" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/vue@2.5.16/dist/vue.js"></script>
+  <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <script>
+      const isNumeric = function (n) {
+          return !isNaN(parseFloat(n)) && isFinite(n);
+      }
+
+      const app = new Vue({
+          el: '#app',
+          data: {
+              currencyLevel: '',
+              editValue: '',
+              rates: [],
+              lastUpdated: '',
+              levels: [],
+              valueLevel: ''
+          },
+          methods: {
+              addLevel: function () {
+                  let that = this;
+
+                  try {
+                      this.validateAdd();
+
+                      axios.post('/level', {
+                          currency: that.currencyLevel,
+                          level: that.valueLevel
+                      })
+                          .then(function (response) {
+                              that.resetForm();
+                              that.getLevels();
+                          })
+                          .catch(function (error) {
+                              alert(error.message);
+                          });
+                  } catch (e) {
+                      alert(e);
+                  }
+              },
+              cancelEdit: function (index) {
+                  this.levels[index].edit = false;
+                  this.editValue = '';
+              },
+              deleteLevel: function (id) {
+                  let that = this;
+                  let conf = confirm('Are you sure?');
+
+                  if (conf == true) {
+                      axios.delete('/level/'+id)
+                          .then(function (response) {
+                              that.getLevels();
+                          })
+                          .catch(function (err) {
+                              alert(err.message);
+                          });
+                  }
+              },
+              edit: function (index) {
+                  let that = this;
+
+                  this.levels.forEach(function (level, index) {
+                      that.levels[index].edit = false;
+                  });
+
+                  this.editValue = this.levels[index].value;
+
+                  this.levels[index].edit = true;
+              },
+              editSave: function (level, index) {
+                  let that = this;
+
+                  try {
+                      this.validateEdit(level);
+
+                      axios.put('/level/'+level.id, {
+                          level: this.editValue,
+                          currency: level.currency
+                      })
+                          .then(function (response) {
+                              that.getLevels();
+                          })
+                          .catch(function (error) {
+                              alert(error);
+                          });
+                  } catch (e) {
+                      alert(e);
+                  }
+              },
+              fetchRates: function () {
+                  let that = this;
+
+                  axios.get('/rates')
+                      .then(function (response) {
+                          that.rates = response.data.rates;
+                          that.lastUpdated = response.data.updated;
+                      })
+                      .catch(function (error) {
+                          console.log(error);
+                      });
+              },
+              getLevels: function () {
+                  let that = this;
+
+                  axios.get('/levels')
+                      .then(function (response) {
+                          if (response.data.totalRows > 0) {
+                              that.levels = response.data.results;
+                          } else {
+                              that.levels = [];
+                          }
+                      })
+                      .catch(function (error) {
+                          console.log(error);
+                      });
+              },
+              getMark: function (rate, symbol) {
+                  let marked = false;
+
+                  this.levels.forEach(function (value) {
+                      if (symbol == value.currency && rate <= parseFloat(value.value)) {
+                          marked = true;
+                      }
+                  });
+
+                  return marked;
+              },
+              resetForm: function () {
+                  this.currencyLevel = '';
+                  this.valueLevel = '';
+              },
+              validateAdd: function () {
+                  if (this.currencyLevel == '') {
+                      throw 'Please select currency.';
+                  }
+
+                  if (this.valueLevel == '') {
+                      throw 'Please insert level value.';
+                  }
+
+                  if (!isNumeric(this.valueLevel)) {
+                      throw 'Currency level must be numeric value.';
+                  }
+
+                  if (this.levels.length == 5) {
+                      this.resetForm();
+                      throw 'Maximum level set reached.'
+                  }
+              },
+              validateEdit: function () {
+                  if (this.editValue == '') {
+                      throw 'Value cannot be empty.'
+                  }
+
+                  if (!isNumeric(this.editValue)) {
+                      throw 'Value must be numeric.'
+                  }
+              }
+          },
+          mounted: function () {
+              this.fetchRates();
+              this.getLevels();
+          }
+
+      });
+  </script>
+
+</body>
+</html>
