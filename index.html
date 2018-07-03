@@ -1,0 +1,287 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        
+        <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" ></script>
+        
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2>
+                        Fetch currency rates
+                    </h2>
+                    
+                    <div id="js-div-fetch">
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h2>
+                        Set forex levels on selected pairs
+
+                    </h2>
+                    
+                    <p>
+                        <select id="js-opt-country">
+                            <option value="">select country</option>
+                        </select>
+                        <input type="text" id='txt-rates' placeholder="rates ..." disabled/>
+                        <input type="number" id='txt-rates-level' pattern="^[0-9]*$" placeholder="set level ..." />
+                        <a href='#' id='js-btn-set-level' class='btn btn-sm btn-success'>Set Level</a>
+                    </p>
+                    <p>
+                    <div id='js-table-level'></div>
+                    </p>
+                </div>
+            </div>
+                                    
+        </div>
+    </body>
+    <script type="text/javascript" >
+        $(function(){
+            var level=[]
+            
+            var Rates={
+                fetchRates  :   function(){
+                    $.getJSON("http://localhost:5000/currency",function(r){
+                        var a=JSON.parse(r);
+                        var el=""
+                        var opt="<option value=''>-- Select Rates --</option>"
+
+                        el+="<table id='tbl-fetch' class='table table-hover' style='font-size:11px;'>";
+                            el+="<thead>";
+                            el+="<tr>";
+                                el+="<th>Currency</th>";
+                                el+="<th>Amount</th>";
+                            el+="</tr>"
+                            el+="</thead>";
+                            el+="<tbody>";
+                                $.each(a.rates,function(i,e){
+                                    el+="<tr>";
+                                        el+="<td>"+i+"</td>"
+                                        el+="<td>"+e+"</td>"
+                                    el+="</tr>"
+
+                                    opt+="<option value='"+e+"'>"+i+"</option>"
+                                })
+                            el+="</tbody>";
+                        el+="</table>"
+
+
+                        $('#js-div-fetch').empty().html(el)
+                        $('#tbl-fetch').dataTable()
+
+                        $('#js-opt-country').empty().html(opt).change(function(){
+                            var a=$(this).val()
+                            $('#txt-rates').val(a);
+                            $('#txt-rates-level').focus()
+                        })
+                        
+                        Rates.handler()
+                    })
+                },
+                handler :   function(){
+                    $('#js-btn-fetch').on('click',function(){
+                        Rates.fetchRates()
+                    })
+
+                    $('#js-btn-set-level').off().on('click',function(e){
+                        e.preventDefault()
+                        var y=$('#txt-rates-level').val()
+
+                        if(y != ""){
+                            var data={
+                                key :   $('#js-opt-country').find(":selected").text(),
+                                val :   $('#txt-rates').val(),
+                                set :   $('#txt-rates-level').val()
+
+                            }
+
+                            $.post("http://localhost:5000/save",data,function(r){
+
+                                level=[];
+                                if(Rates.cekCountLevel()){
+                                    Rates.updateLevel(data)
+                                    Rates.renderLevel()
+                                }else{
+                                    alert("Maximum Level can be set until 5!")
+                                }
+
+
+                            })
+                        }else{
+                            alert("Please fill the value!")
+                        }
+                    })
+                    
+                    $.each($('.js-btn-edit'),function(i,e){
+                        $(e).off().on('click',function(){
+
+                            var data={
+                                key :   $(e).data('key')
+                            }
+
+                            $(".inp"+$(e).data('key')).empty().html("<input type='text' disabled class='txtInp"+$(e).data('key')+"'/>");
+                            $('.txtInp'+$(e).data('key')).val($(e).data('key'))
+
+                            $(".inp1"+$(e).data('key')).empty().html("<input type='text' disabled class='txtInp1"+$(e).data('key')+"'/>");
+                            $('.txtInp1'+$(e).data('key')).val($(e).data('val'))
+
+                            $(".inp2"+$(e).data('key')).empty().html("<input type='text' class='txtInp2 txtInp2"+$(e).data('key')+"'/> <a href='#' class='save-yes' data-key='"+$(e).data('key')+"' data-val='"+$(e).data('val')+"' data-set='"+$(e).data('set')+"'>save</a>");
+                            $('.txtInp2'+$(e).data('key')).val($(e).data('set')).focus()
+
+
+                            $.each($('.save-yes'),function(i,e){
+                                $(e).off().on('click',function(){
+
+                                    var c=confirm("Update level ? ")
+                                    if(c){
+                                        var data={
+                                            key     :   $(e).data('key'),
+                                            val     :   $(e).data('val'),
+                                            set     :   $(e).data('set'),
+                                            update  :   $('.txtInp2').eq(i).val()
+                                        }
+
+                                        $.post("http://localhost:5000/update",data,function(r){
+                                            Rates.deleteLevel($(e).data('key'))
+
+                                            Rates.updateLevel({
+                                                key     :   $(e).data('key'),
+                                                val     :   $(e).data('val'),
+                                                set  :   $('.txtInp2').eq(i).val()
+                                            })
+
+                                            Rates.renderLevel()
+                                        })
+                                    }else{
+                                        Rates.renderLevel()
+                                    }
+
+                                })
+                            });
+
+                            return false
+                        })
+                    })
+
+                    $.each($('.js-btn-delete'),function(i,e){
+                        $(e).off().on('click',function(){
+                            var c =confirm("Delete this forex level setting ?");
+                            if(c){
+                                var data={
+                                    key :   $(e).data('key')
+                                }
+
+                                $.post("http://localhost:5000/delete",data,function(r){
+                                    Rates.deleteLevel($(e).data('key'))
+                                    Rates.renderLevel()
+                                })
+
+                            }else{
+                                Rates.renderLevel()
+                            }
+
+                            return false;
+
+
+                        })
+                    })
+                },
+                cekCountLevel   :   function(){
+                    var a = localStorage.getItem('level');
+                    var x=JSON.parse(a);
+
+                    if(a != null){
+                        if(x.length > 4){
+                            return false
+                        }else{
+                            return true;
+                        }
+                    }else{
+                        return true;
+                    }
+                },
+                updateLevel :   function(arr){
+                    var a = localStorage.getItem('level');
+                
+                    if(a != null){
+                        level=JSON.parse(a)    
+                    }
+
+                    level.push(arr)
+
+                    localStorage.setItem('level',JSON.stringify(level))
+                },
+                deleteLevel :   function(key){
+                    var a = localStorage.getItem('level');
+                
+                    if(a != null){
+                        level=[]
+                        var data=JSON.parse(a)
+
+                        $.each(data,function(i,e){
+                            if(e.key!=key){
+                                level.push({
+                                    key :   e.key,
+                                    val :   e.val,
+                                    set :   e.set
+                                })
+
+                            }
+                        })
+
+                        localStorage.setItem('level',JSON.stringify(level))
+                    }
+                },
+                renderLevel    :   function(){
+                    var a = localStorage.getItem('level');
+                    var data;
+                    var el="";
+
+                    if(a != null){
+                        data=JSON.parse(a)
+
+                        el+="<table class='table table-striped' style='font-size:11px;'>"
+                        el+="<tr>";
+                            el+="<th>Currency</th>";
+                            el+="<th>Rate</th>";
+                            el+="<th>Level</th>";
+                            el+="<th></th>";
+
+                        el+="</tr>";
+
+                        $.each(data,function(i,e){
+                            el+="<tr>";
+                                el+="<td class='inp"+e.key+"'>"+e.key+"</td>";
+                                el+="<td class='inp1"+e.key+"'>"+e.val+"</td>";
+                                el+="<td class='inp2"+e.key+"'>"+e.set+"</td>";
+                                el+="<td>";
+                                    el+="<a href='#' data-key='"+e.key+"' data-val='"+e.val+"' data-set='"+e.set+"' class='js-btn-edit'><span class='glyphicon glyphicon-pencil'></span></a> ";
+                                    el+="<a href='#' data-key='"+e.key+"' class='js-btn-delete'><span class='glyphicon glyphicon-remove'></span></a>";
+                                el+="</td>";
+                            el+="</tr>"
+                        })
+
+                        el+="</table>"
+
+                        $('#js-table-level').empty().html(el)
+
+                        Rates.handler()
+                    }
+                },
+                
+            }
+            
+            Rates.fetchRates()
+            Rates.renderLevel()
+        })
+    </script>
+    
+</html>
