@@ -3,6 +3,10 @@
     {
       "currency": "DKK",
       "value": 7.4567
+    },
+    {
+      "currency": "CNY",
+      "value": 7.9451
     }
   ]
 }

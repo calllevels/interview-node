@@ -15,6 +15,13 @@ function modalsReducer(state = INTIAL_STATE, action) {
         ...state,
         addCurrencyModal: action.state
       };
+    case "NOTIFICATION":
+      return {
+        ...state,
+        notificationStatus: action.data.state,
+        notificationAlertValue: action.data.alertValue,
+        notificationCurrency: action.data.currency
+      };
     default:
       return state;
   }

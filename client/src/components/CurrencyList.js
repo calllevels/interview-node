@@ -9,7 +9,7 @@ import { Button, Input } from "@material-ui/core";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { Edit, Delete, AddAlert, Remove } from "@material-ui/icons";
-import { editModal } from "../actions/modals";
+import { editModal, notificationPopup } from "../actions/modals";
 import {
   deleteCurrency,
   setAlert,
@@ -61,9 +61,7 @@ class CurrencyList extends Component {
     }
   };
   deleteAlert = cur => {
-    if (this.cur.alertValue) {
-      this.props.removeAlert(cur);
-    }
+    this.props.removeAlert(cur);
     this.setState({ [cur]: "" });
   };
 
@@ -88,7 +86,11 @@ class CurrencyList extends Component {
           <TableBody>
             {data.map((cur, index) => {
               if (cur.alertValue <= cur.value) {
-                alert(cur.currency + " is now higher than " + cur.alertValue);
+                this.props.notificationPopup(
+                  true,
+                  cur.currency,
+                  cur.alertValue
+                );
               }
               return (
                 <TableRow key={index}>
@@ -163,7 +165,14 @@ const mapStateToProps = state => ({});
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
-    { editModal, deleteCurrency, setAlert, removeAlert, setToEditValue },
+    {
+      editModal,
+      deleteCurrency,
+      setAlert,
+      removeAlert,
+      setToEditValue,
+      notificationPopup
+    },
     dispatch
   );
 
