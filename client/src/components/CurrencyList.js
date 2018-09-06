@@ -6,8 +6,11 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import { Button, Input } from "@material-ui/core";
-
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
 import { Edit, Delete, AddAlert, Remove } from "@material-ui/icons";
+import { editModal } from "../actions/modals";
+import EditRateDialog from "./EditRateDialog";
 
 function getStyles(theme) {
   return {
@@ -33,6 +36,7 @@ class CurrencyList extends Component {
 
     return (
       <Fragment>
+        <EditRateDialog />
         <Table className={classes.root}>
           <TableHead>
             <TableRow>
@@ -70,7 +74,13 @@ class CurrencyList extends Component {
                   Remove Alert
                   <Remove />
                 </Button>
-                <Button variant="contained" color="primary">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    this.props.editModal(true);
+                  }}
+                >
                   <Edit />
                 </Button>
                 <Button variant="contained" color="primary">
@@ -85,4 +95,14 @@ class CurrencyList extends Component {
   }
 }
 
-export default withStyles(getStyles)(CurrencyList);
+const mapStateToProps = state => ({});
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ editModal }, dispatch);
+
+export default withStyles(getStyles)(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(CurrencyList)
+);

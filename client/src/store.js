@@ -2,8 +2,11 @@ import { createStore, combineReducers, applyMiddleware, compose } from "redux";
 import thunk from "redux-thunk";
 
 import currenciesReducer from "./reducers/currenciesReducer";
+import modalsReducer from "./reducers/modalsReducer";
+
 const reducers = combineReducers({
-  currenciesReducer
+  currenciesReducer,
+  modalsReducer
 });
 
 const enhancers = [];

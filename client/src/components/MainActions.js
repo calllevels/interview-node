@@ -1,11 +1,16 @@
 import React, { Component, Fragment } from "react";
 import { GetApp, Add } from "@material-ui/icons/";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
 import { Button } from "@material-ui/core";
+import { addModal } from "../actions/modals";
+import AddCurrencyModal from "./AddCurrencyModal";
 
 class MainActions extends Component {
   render() {
     return (
       <Fragment>
+        <AddCurrencyModal />
         <div
           style={{
             display: "flex",
@@ -26,6 +31,9 @@ class MainActions extends Component {
             style={{ flex: 1, marginLeft: 8 }}
             variant="contained"
             color="primary"
+            onClick={() => {
+              this.props.addModal(true);
+            }}
           >
             Add Currency
             <Add />
@@ -36,4 +44,12 @@ class MainActions extends Component {
   }
 }
 
-export default MainActions;
+const mapStateToProps = state => ({});
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ addModal }, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MainActions);
