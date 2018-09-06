@@ -26,6 +26,37 @@ export function requestCurrenciesData() {
       .catch(err => console.log(err)); //adderror handle
   };
 }
+
+export function addCurrency(currencyKey) {
+  return function(dispatch) {
+    dispatch(fetchCurrenciesPending());
+    return axios
+      .post("http://localhost:5000/Currencies/", {
+        currencyKey
+      })
+      .then(data => dispatch(receiveCurrenciesData(data.data)))
+      .catch(error => {
+        console.log(error);
+      });
+  };
+}
+
+export function deleteCurrency(currencyKey) {
+  return function(dispatch) {
+    dispatch(fetchCurrenciesPending());
+    return axios
+      .delete("http://localhost:5000/Currencies/", {
+        data: {
+          currencyKey
+        }
+      })
+      .then(data => dispatch(receiveCurrenciesData(data.data)))
+      .catch(error => {
+        console.log(error);
+      });
+  };
+}
+
 export const receiveCurrenciesData = data => ({
   type: RECEIVE_CURRENCIES_DATA,
   data

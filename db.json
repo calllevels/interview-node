@@ -1,20 +1,16 @@
 {
   "currencies": [
     {
-      "currency": "GBP",
-      "value": 0.89824
+      "currency": "AUD",
+      "value": 1.6164
     },
     {
-      "currency": "IDR",
-      "value": 17324
+      "currency": "BRL",
+      "value": 4.7918
     },
     {
-      "currency": "SGD",
-      "value": 1.6
-    },
-    {
-      "currency": "USD",
-      "value": 1.1634
+      "currency": "CAD",
+      "value": 1.5338
     }
   ]
 }

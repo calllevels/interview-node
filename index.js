@@ -61,9 +61,32 @@ app.get("/Currencies", function(req, res) {
 });
 
 // add a new currency to the local database
-app.post("/Currencies/", function(req, res) {});
-
-// update currencie value to the database
+app.post("/Currencies/", function(req, res) {
+  http
+    .get(
+      "http://api.exchangeratesapi.io/latest?symbols=" + req.body.currencyKey,
+      resp => {
+        let data = "";
+        resp.on("data", chunk => {
+          data += chunk;
+        });
+        resp.on("end", () => {
+          var parsed = JSON.parse(data);
+          var mapper = new Map(Object.entries(parsed.rates));
+          mapper.forEach((element, key) => {
+            db.get("currencies")
+              .push({ currency: key, value: element })
+              .write();
+          });
+          res.status(200).json(db.get("currencies").value());
+        });
+      }
+    )
+    .on("error", err => {
+      console.log("Error: " + err.message);
+    });
+});
+// update currency value to the database
 app.put("/Currencies/", function(req, res) {});
 
 // method to add alert to currency
@@ -73,7 +96,13 @@ app.put("/Currencies/setAlert", function(req, res) {});
 app.put("/Currencies/removeAlert", function(req, res) {});
 
 // method delete a currency from the local db
-app.delete("/Currencies", function(req, res) {});
+app.delete("/Currencies", function(req, res) {
+  const currencies = db.get("currencies");
+  const toRemove = currencies.find({ currency: req.body.currencyKey }).value();
+  currencies.remove(toRemove).write();
+  res.status(200).json(db.get("currencies").value());
+});
+
 var port = process.env.PORT || 5000;
 
 app.listen(port, () => {

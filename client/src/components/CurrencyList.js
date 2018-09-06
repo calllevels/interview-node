@@ -10,6 +10,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { Edit, Delete, AddAlert, Remove } from "@material-ui/icons";
 import { editModal } from "../actions/modals";
+import { deleteCurrency } from "../actions/currencies";
 import EditRateDialog from "./EditRateDialog";
 
 function getStyles(theme) {
@@ -94,7 +95,13 @@ class CurrencyList extends Component {
                     >
                       <Edit />
                     </Button>
-                    <Button variant="contained" color="primary">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        this.props.deleteCurrency(cur.currency);
+                      }}
+                    >
                       <Delete />
                     </Button>
                   </TableCell>
@@ -111,7 +118,7 @@ class CurrencyList extends Component {
 const mapStateToProps = state => ({});
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ editModal }, dispatch);
+  bindActionCreators({ editModal, deleteCurrency }, dispatch);
 
 export default withStyles(getStyles)(
   connect(

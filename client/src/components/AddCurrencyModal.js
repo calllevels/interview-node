@@ -11,13 +11,21 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { addModal } from "../actions/modals";
+import { addCurrency } from "../actions/currencies";
 import { Button } from "@material-ui/core";
 import currencyData from "../currencyKeys.json";
 
 class AddCurrencyModal extends Component {
   state = {};
-
-  handleaddCurrencyChange = () => {};
+  onAddCurrency = () => {
+    this.props.addCurrency(this.state.selectedToAdd);
+    this.props.addModal(false);
+  };
+  handleaddCurrencyChange = e => {
+    this.setState({
+      selectedToAdd: e.target.value
+    });
+  };
   render() {
     return (
       <Dialog
@@ -30,7 +38,11 @@ class AddCurrencyModal extends Component {
           <FormControl>
             <InputLabel htmlFor="select-multiple">Currency</InputLabel>
             <Select
-              value={"default"}
+              value={
+                this.state.selectedToAdd === undefined
+                  ? "default"
+                  : this.state.selectedToAdd
+              }
               onChange={this.handleaddCurrencyChange}
               input={<Input id="select-multiple" />}
             >
@@ -38,7 +50,13 @@ class AddCurrencyModal extends Component {
                 Select a Currency to Add
               </MenuItem>
               {currencyData.currenciesKey.map(name => (
-                <MenuItem key={name} value={name}>
+                <MenuItem
+                  key={name}
+                  value={name}
+                  disabled={
+                    this.props.activeCurrencies.includes(name) ? true : false
+                  }
+                >
                   {name}
                 </MenuItem>
               ))}
@@ -50,8 +68,9 @@ class AddCurrencyModal extends Component {
             Cancel
           </Button>
           <Button
-            // onClick={() => {
-            // }}
+            onClick={() => {
+              this.onAddCurrency();
+            }}
             color="primary"
           >
             Add
@@ -62,11 +81,12 @@ class AddCurrencyModal extends Component {
   }
 }
 const mapStateToProps = state => ({
-  addCurrencyState: state.modalsReducer.addCurrencyModal
+  addCurrencyState: state.modalsReducer.addCurrencyModal,
+  activeCurrencies: state.currenciesReducer.activeCurrencies
 });
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ addModal }, dispatch);
+  bindActionCreators({ addModal, addCurrency }, dispatch);
 
 export default connect(
   mapStateToProps,
