@@ -21,6 +21,11 @@ function currenciesReducer(state = INTIAL_STATE, action) {
         ...state,
         currenciesLoaded: true
       };
+    case "SET_VALUE_TO_EDIT":
+      return {
+        ...state,
+        currencyToEdit: action.data
+      };
     default:
       return state;
   }

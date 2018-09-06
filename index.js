@@ -87,14 +87,35 @@ app.post("/Currencies/", function(req, res) {
     });
 });
 // update currency value to the database
-app.put("/Currencies/", function(req, res) {});
-
+app.put("/Currencies/", function(req, res) {
+  db.get("currencies")
+    .find({ currency: req.body.currencyKey })
+    .assign({
+      currency: req.body.currencyKey,
+      value: req.body.newValue
+    })
+    .write();
+  res.status(200).json(db.get("currencies").value());
+});
 // method to add alert to currency
-app.put("/Currencies/setAlert", function(req, res) {});
+app.put("/Currencies/setAlert", function(req, res) {
+  db.get("currencies")
+    .find({ currency: req.body.currencyKey })
+    .assign({
+      alertValue: req.body.alertValue
+    })
+    .write();
+  res.status(200).json(db.get("currencies").value());
+});
 
 // method to remove alert from currency
-app.put("/Currencies/removeAlert", function(req, res) {});
-
+app.put("/Currencies/removeAlert", function(req, res) {
+  db.get("currencies")
+    .find({ currency: req.body.currencyKey })
+    .unset("alertValue")
+    .write();
+  res.status(200).json(db.get("currencies").value());
+});
 // method delete a currency from the local db
 app.delete("/Currencies", function(req, res) {
   const currencies = db.get("currencies");

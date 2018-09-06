@@ -8,10 +8,15 @@ import FormControl from "@material-ui/core/FormControl";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { editModal } from "../actions/modals";
+import { updateCurrency } from "../actions/currencies";
 import { Button } from "@material-ui/core";
 
 class EditRateDialog extends Component {
+  state = {};
   onEditCurrency = () => {
+    if (this.state.value) {
+      this.props.updateCurrency(this.props.currencyToEdit, this.state.value);
+    }
     this.props.editModal(false);
   };
   render() {
@@ -24,7 +29,13 @@ class EditRateDialog extends Component {
         <DialogTitle id="form-dialog-title">Assign Value</DialogTitle>
         <DialogContent>
           <FormControl>
-            <TextField id="value" label="Value" type="number" margin="normal" />
+            <TextField
+              id="value"
+              label="Value"
+              type="number"
+              margin="normal"
+              onChange={e => this.setState({ value: e.target.value })}
+            />
           </FormControl>
         </DialogContent>
         <DialogActions>
@@ -46,11 +57,12 @@ class EditRateDialog extends Component {
 }
 
 const mapStateToProps = state => ({
-  editRateState: state.modalsReducer.editRateModal
+  editRateState: state.modalsReducer.editRateModal,
+  currencyToEdit: state.currenciesReducer.currencyToEdit
 });
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ editModal }, dispatch);
+  bindActionCreators({ editModal, updateCurrency }, dispatch);
 
 export default connect(
   mapStateToProps,

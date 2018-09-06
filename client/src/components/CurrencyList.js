@@ -10,7 +10,12 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { Edit, Delete, AddAlert, Remove } from "@material-ui/icons";
 import { editModal } from "../actions/modals";
-import { deleteCurrency } from "../actions/currencies";
+import {
+  deleteCurrency,
+  setAlert,
+  removeAlert,
+  setToEditValue
+} from "../actions/currencies";
 import EditRateDialog from "./EditRateDialog";
 
 function getStyles(theme) {
@@ -32,16 +37,42 @@ const CustomTableCell = withStyles(theme => ({
 }))(TableCell);
 
 class CurrencyList extends Component {
+  constructor(props) {
+    super(props);
+  }
+  state = {};
   renderInput = cur => {
-    if (cur.alertValue) {
-      return <Input placeholder="Set Alert" value={cur.alertValue} />;
+    const curName = cur.currency;
+    return (
+      <Input
+        placeholder="Set Alert"
+        type="number"
+        defaultValue={cur.alertValue}
+        value={this.state[curName]}
+        onChange={e => this.setState({ [curName]: e.target.value })}
+      />
+    );
+  };
+  addAlert = cur => {
+    if (this.state[cur]) {
+      this.props.setAlert(cur, this.state[cur]);
     } else {
-      return <Input placeholder="Set Alert" value="" />;
+      alert("Input is empty !");
     }
+  };
+  deleteAlert = cur => {
+    if (this.cur.alertValue) {
+      this.props.removeAlert(cur);
+    }
+    this.setState({ [cur]: "" });
+  };
+
+  editValue = cur => {
+    this.props.setToEditValue(cur);
+    this.props.editModal(true);
   };
   render() {
     const { classes, data } = this.props;
-
     return (
       <Fragment>
         <EditRateDialog />
@@ -56,7 +87,8 @@ class CurrencyList extends Component {
           </TableHead>
           <TableBody>
             {data.map((cur, index) => {
-              if (cur.alertValue >= cur.value) {
+              if (cur.alertValue <= cur.value) {
+                alert(cur.currency + " is now higher than " + cur.alertValue);
               }
               return (
                 <TableRow key={index}>
@@ -78,11 +110,23 @@ class CurrencyList extends Component {
                       justifyContent: "space-between"
                     }}
                   >
-                    <Button variant="contained" color="primary">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        this.addAlert(cur.currency);
+                      }}
+                    >
                       Add Alert
                       <AddAlert />
                     </Button>
-                    <Button variant="contained" color="primary">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        this.deleteAlert(cur.currency);
+                      }}
+                    >
                       Remove Alert
                       <Remove />
                     </Button>
@@ -90,7 +134,7 @@ class CurrencyList extends Component {
                       variant="contained"
                       color="primary"
                       onClick={() => {
-                        this.props.editModal(true);
+                        this.editValue(cur.currency);
                       }}
                     >
                       <Edit />
@@ -118,7 +162,10 @@ class CurrencyList extends Component {
 const mapStateToProps = state => ({});
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ editModal, deleteCurrency }, dispatch);
+  bindActionCreators(
+    { editModal, deleteCurrency, setAlert, removeAlert, setToEditValue },
+    dispatch
+  );
 
 export default withStyles(getStyles)(
   connect(
