@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { Button } from "@material-ui/core";
 import { addModal } from "../actions/modals";
 import AddCurrencyModal from "./AddCurrencyModal";
+import { fetchLiveData } from "../actions/currencies";
 
 class MainActions extends Component {
   render() {
@@ -23,6 +24,9 @@ class MainActions extends Component {
             style={{ flex: 1, marginRight: 8 }}
             variant="contained"
             color="primary"
+            onClick={() => {
+              this.props.fetchLiveData(this.props.activeCurrencies);
+            }}
           >
             Fetch Data Online
             <GetApp />
@@ -44,10 +48,13 @@ class MainActions extends Component {
   }
 }
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+  activeCurrencies: state.currenciesReducer.activeCurrencies,
+  status: state.currenciesReducer.currenciesLoaded
+});
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ addModal }, dispatch);
+  bindActionCreators({ addModal, fetchLiveData }, dispatch);
 
 export default connect(
   mapStateToProps,

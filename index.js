@@ -5,6 +5,10 @@ const http = require("http");
 var bodyParser = require("body-parser");
 const adapter = new FileSync("db.json");
 const db = low(adapter);
+var cors = require("cors");
+
+//No 'Access-Control-Allow-Origin'
+app.use(cors());
 
 db.defaults({ currencies: [] }).write();
 
@@ -23,11 +27,11 @@ function resetDB() {
     .write();
 }
 // method to populate the db -- Should be customized later
-//TODO add paramters
-app.get("/PopulateDB", function(req, res) {
+app.post("/PopulateDB", function(req, res) {
   http
     .get(
-      "http://api.exchangeratesapi.io/latest?symbols=USD,GBP,SGD,IDR,EUR",
+      "http://api.exchangeratesapi.io/latest?symbols=" +
+        req.body.activeCurrencies,
       resp => {
         let data = "";
         resp.on("data", chunk => {

@@ -31,8 +31,15 @@ const CustomTableCell = withStyles(theme => ({
 }))(TableCell);
 
 class CurrencyList extends Component {
+  renderInput = cur => {
+    if (cur.alertValue) {
+      return <Input placeholder="Set Alert" value={cur.alertValue} />;
+    } else {
+      return <Input placeholder="Set Alert" value="" />;
+    }
+  };
   render() {
-    const { classes } = this.props;
+    const { classes, data } = this.props;
 
     return (
       <Fragment>
@@ -47,47 +54,53 @@ class CurrencyList extends Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
-              <TableCell component="th" scope="row">
-                Test
-              </TableCell>
-              <TableCell component="th" scope="row">
-                Test
-              </TableCell>
-              <TableCell component="th" scope="row">
-                Test
-              </TableCell>
-              <TableCell
-                component="th"
-                scope="row"
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between"
-                }}
-              >
-                <Button variant="contained" color="primary">
-                  Add Alert
-                  <AddAlert />
-                </Button>
-                <Button variant="contained" color="primary">
-                  Remove Alert
-                  <Remove />
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    this.props.editModal(true);
-                  }}
-                >
-                  <Edit />
-                </Button>
-                <Button variant="contained" color="primary">
-                  <Delete />
-                </Button>
-              </TableCell>
-            </TableRow>
+            {data.map((cur, index) => {
+              if (cur.alertValue >= cur.value) {
+              }
+              return (
+                <TableRow key={index}>
+                  <TableCell component="th" scope="row">
+                    {cur.currency}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {cur.value}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {this.renderInput(cur)}
+                  </TableCell>
+                  <TableCell
+                    component="th"
+                    scope="row"
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between"
+                    }}
+                  >
+                    <Button variant="contained" color="primary">
+                      Add Alert
+                      <AddAlert />
+                    </Button>
+                    <Button variant="contained" color="primary">
+                      Remove Alert
+                      <Remove />
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        this.props.editModal(true);
+                      }}
+                    >
+                      <Edit />
+                    </Button>
+                    <Button variant="contained" color="primary">
+                      <Delete />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </Fragment>

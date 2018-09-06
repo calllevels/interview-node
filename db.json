@@ -2,19 +2,19 @@
   "currencies": [
     {
       "currency": "GBP",
-      "value": 0.90328
+      "value": 0.89824
     },
     {
       "currency": "IDR",
-      "value": 17298
+      "value": 17324
     },
     {
       "currency": "SGD",
-      "value": 1.5965
+      "value": 1.6
     },
     {
       "currency": "USD",
-      "value": 1.1582
+      "value": 1.1634
     }
   ]
 }
