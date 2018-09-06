@@ -47,8 +47,7 @@ class CurrencyList extends Component {
       <Input
         placeholder="Set Alert"
         type="number"
-        defaultValue={cur.alertValue}
-        value={this.state[curName]}
+        value={this.state[curName] || cur.alertValue || ""}
         onChange={e => this.setState({ [curName]: e.target.value })}
       />
     );
@@ -91,14 +90,14 @@ class CurrencyList extends Component {
                   cur.currency,
                   cur.alertValue
                 );
-              }
+              } //not advised
               return (
                 <TableRow key={index}>
                   <TableCell component="th" scope="row">
                     {cur.currency}
                   </TableCell>
                   <TableCell component="th" scope="row">
-                    {cur.value}
+                    {cur.value} / EUR
                   </TableCell>
                   <TableCell component="th" scope="row">
                     {this.renderInput(cur)}
