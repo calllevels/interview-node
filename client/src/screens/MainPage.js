@@ -1,7 +1,20 @@
 import React, { Component } from "react";
+import CurrencyList from "../components/CurrencyList";
+import Header from "../components/Header";
+import MainActions from "../components/MainActions";
 
-export default class MainPage extends Component {
+class MainPage extends Component {
   render() {
-    return <div>Hello world</div>;
+    return (
+      <div>
+        <Header />
+        <div style={{ margin: "2% 8% 0% 8%" }}>
+          <MainActions />
+          <CurrencyList />
+        </div>
+      </div>
+    );
   }
 }
+
+export default MainPage;
