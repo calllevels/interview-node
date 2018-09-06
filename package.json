@@ -6,11 +6,13 @@
   "scripts": {
     "start": "node ."
   },
-  "engines" : { 
-    "node" : ">=8.9.0" 
+  "engines": {
+    "node": ">=8.9.0"
   },
   "repository": "git@github.com:calllevels/interview-node.git",
   "dependencies": {
-    "express": "^4.16.2"
+    "body-parser": "^1.18.3",
+    "express": "^4.16.2",
+    "lowdb": "^1.0.0"
   }
 }
